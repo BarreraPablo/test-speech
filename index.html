@@ -57,6 +57,11 @@
                 console.error('Speech recognition error detected: ' + event.error);
             };
 
+            recognition.onend = () => {
+                console.log('Reconocimiento de voz detenido. Reiniciando...');
+                recognition.start(); // Reinicia el reconocimiento si se detiene
+            };
+
             // Start recognition
             document.getElementById('start').addEventListener('click', function() {
                 recognition.start();
