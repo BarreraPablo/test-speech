@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba reconocimiento de voz</title>
+</head>
+<body>
+    <h1>Prueba reconocimiento de voz</h1>
+    <button id="start">Iniciar</button>
+    <button id="stop">Parar</button>
+    <p>Transcripcion: <div id="transcript"></div></p>
+
+    <p>Puntos rojo: <div id="puntos-rojo">0</div></p>
+    <p>Puntos azul: <div id="puntos-azul">0</div></p>
+
+    <script>
+        const phrasesAzul = ['azul', 'punto']
+        const phrasesRojo = ['rojo', 'punto']
+
+        // Check for browser support
+        if (!('webkitSpeechRecognition' in window)) {
+            alert('Web Speech API is not supported by your browser.');
+        } else {
+            // Create a new instance of the webkitSpeechRecognition object
+            const recognition = new webkitSpeechRecognition();
+
+            // Set continuous to true
+            recognition.continuous = true;
+            recognition.interimResults = false;
+
+            // Set language
+            recognition.lang = 'es-AR';
+
+            // Handle results
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                
+                if(phrasesAzul.every(p => transcript.toLowerCase().includes(p))) {
+                    console.log('Punto reconocido azul')
+                    document.getElementById('puntos-azul').innerText = Number.parseInt(document.getElementById('puntos-azul').innerText) + 1;
+                }
+                
+                if(phrasesRojo.every(p => transcript.toLowerCase().includes(p))) {
+                    console.log('Punto reconocido rojo')
+                    document.getElementById('puntos-rojo').innerText = Number.parseInt(document.getElementById('puntos-rojo').innerText) + 1;
+                }
+
+                document.getElementById('transcript').innerText = transcript;
+            };
+
+            // Handle errors
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error detected: ' + event.error);
+            };
+
+            // Start recognition
+            document.getElementById('start').addEventListener('click', function() {
+                recognition.start();
+            });
+
+            // Stop recognition
+            document.getElementById('stop').addEventListener('click', function() {
+                recognition.stop();
+            });
+        }
+    </script>
+</body>
+</html>
